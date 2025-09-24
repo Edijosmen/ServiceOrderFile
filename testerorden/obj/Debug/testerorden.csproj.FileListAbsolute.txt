@@ -1,0 +1,8 @@
+D:\Developer\-Net\testerorden\testerorden\bin\Debug\testerorden.exe.config
+D:\Developer\-Net\testerorden\testerorden\bin\Debug\testerorden.exe
+D:\Developer\-Net\testerorden\testerorden\bin\Debug\testerorden.pdb
+D:\Developer\-Net\testerorden\testerorden\obj\Debug\testerorden.csproj.AssemblyReference.cache
+D:\Developer\-Net\testerorden\testerorden\obj\Debug\testerorden.csproj.SuggestedBindingRedirects.cache
+D:\Developer\-Net\testerorden\testerorden\obj\Debug\testerorden.csproj.CoreCompileInputs.cache
+D:\Developer\-Net\testerorden\testerorden\obj\Debug\testerorden.exe
+D:\Developer\-Net\testerorden\testerorden\obj\Debug\testerorden.pdb
