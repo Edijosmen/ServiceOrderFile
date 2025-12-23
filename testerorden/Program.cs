@@ -8,7 +8,7 @@ namespace testerorden
     {
         static void Main(string[] args)
         {
-            OrganizeFiles();
+            //OrganizeFiles();
             ClassOrganizeFile fun = new ClassOrganizeFile();
             fun.FuntionOrganize();
         }

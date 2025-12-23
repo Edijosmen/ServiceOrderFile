@@ -2,73 +2,26 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-
+using System.Text.RegularExpressions;
 
 namespace testerorden
 {
     public class ClassOrganizeFile
     {
-        string DumperGameReport = "D:\\Reports\\DumperGameReport";
-        string DumperPos = "D:\\Reports\\DumperPos";
-        string DumperRedemption = "D:\\Reports\\DumperRedemption";
-
+        string RutaDumperGameReport = "D:\\Reports\\DumperGameReport";
+        string RutaDumperPos = "D:\\Reports\\DumperPos";
+        string RutaDumperRedemption = "D:\\Reports\\DumperRedemption";
+        string rutaArchivo = "C:\\Logs\\FileOrganizerLog.txt";
         public void FuntionOrganize()
         {
-            string GR = DumperGameReportMonth(DateTime.UtcNow.Month);
-            string PR = DumperPosMonth(DateTime.UtcNow.Month);
-            string RD = DumperRedemptionMonth(DateTime.UtcNow.Month);
+            
+           
 
-            OrdenFile(DumperGameReport, GR);
-            OrdenFile(DumperPos, PR);
-            OrdenFile(DumperRedemption, RD);
+            OrdenFile( RutaDumperGameReport );
+            //OrdenFile(RutaDumperPos);
+            //OrdenFile(RutaDumperRedemption);
         }
-        string DumperGameReportMonth(int month)
-        {
-            string returMonth = "";
-            switch (month)
-            {
-                case 1:
-                    returMonth = "01 Ene";
-                    break;
-                case 2:
-                    returMonth = "02 Feb";
-                    break;
-                case 3:
-                    returMonth = "03 Mar";
-                    break;
-                case 4:
-                    returMonth = "04 Abr";
-                    break;
-                case 5:
-                    returMonth = "05 May";
-                    break;
-                case 6:
-                    returMonth = "06 Jun";
-                    break;
-                case 7:
-                    returMonth = "07 Jul";
-                    break;
-                case 8:
-                    returMonth = "08 Ago";
-                    break;
-                case 9:
-                    returMonth = "09 Sep";
-                    break;
-                case 10:
-                    returMonth = "10 Oct";
-                    break;
-                case 11:
-                    returMonth = "11 Nov";
-                    break;
-                case 12:
-                    returMonth = "12 Dic";
-                    break;
-                default:
-                    break;
-            }
-            return returMonth;
-        }
-        string DumperPosMonth(int month)
+        string GetMonth(int month)
         {
             string returMonth = "";
             switch (month)
@@ -113,55 +66,10 @@ namespace testerorden
                     break;
             }
             return returMonth;
-
         }
-        string DumperRedemptionMonth(int month)
-        {
-            string returMonth = "";
-            switch (month)
-            {
-                case 1:
-                    returMonth = "01. ENERO";
-                    break;
-                case 2:
-                    returMonth = "02. FEBRERO";
-                    break;
-                case 3:
-                    returMonth = "03. MARZO";
-                    break;
-                case 4:
-                    returMonth = "04. ABRIL";
-                    break;
-                case 5:
-                    returMonth = "05. MAYO";
-                    break;
-                case 6:
-                    returMonth = "06. JUNIO";
-                    break;
-                case 7:
-                    returMonth = "07. JULIO";
-                    break;
-                case 8:
-                    returMonth = "08. AGOSTO";
-                    break;
-                case 9:
-                    returMonth = "09. SEPTIEMBRE";
-                    break;
-                case 10:
-                    returMonth = "10. OCTUBRE";
-                    break;
-                case 11:
-                    returMonth = "11. NOVIEMBRE";
-                    break;
-                case 12:
-                    returMonth = "12. DICIEMBRE";
-                    break;
-                default:
-                    break;
-            }
-            return returMonth;
-        }
-        void OrdenFile(string Report, string Mes)
+       
+        
+        void OrdenFile(string Report)
         {
             try
             {
@@ -169,15 +77,22 @@ namespace testerorden
                 foreach (string filePath in Directory.GetFiles(Report))
                 {
                     string fileName = Path.GetFileName(filePath);
+                    Match match = Regex.Match(fileName, @"\d{2}-\d{2}-\d{4}");
+                    string date = match.Value;
+                    string[] datearray = date.Split('-');
+                    string day = datearray[0];
+                    string month = datearray[1];
+                    string year = datearray[2];
+                    string nameMes = GetMonth(int.Parse(month));
                     if (fileName.Contains("Y0"))
                     {
-                        string path = Report + "\\Imperial\\" + DateTime.UtcNow.Year.ToString() + "\\" + Mes + "\\";
+                        string path = Report + "\\Imperial\\" + year + "\\" + nameMes + "\\";
                         if (!Directory.Exists(path))
                         {
                             Directory.CreateDirectory(path);
                         }
                         string destinationPath = Path.Combine(path, fileName);
-                        string fileNameOll = Path.GetFileName(destinationPath);
+                        //validar que no exista el archivo
                         if ( !File.Exists(destinationPath))
                         {
                             File.Move(filePath, destinationPath);
@@ -191,91 +106,92 @@ namespace testerorden
                     }
                     if (fileName.Contains("Y1"))
                     {
-                        string path = Report + "\\Salitre\\" + DateTime.UtcNow.Year.ToString() + "\\" + Mes + "\\";
+                        string path = Report + "\\Salitre\\" + year + "\\" + nameMes + "\\";
                         if (!Directory.Exists(path))
                         {
                             Directory.CreateDirectory(path);
                         }
                         string destinationPath = Path.Combine(path, fileName);
-                        string fileNameOll = Path.GetFileName(destinationPath);
-                        if (fileName != fileNameOll)
+                        //validar que no exista el archivo
+                        if (!File.Exists(destinationPath))
                         {
                             File.Move(filePath, destinationPath);
                             Message += "\n Salitre(OK)";
                         }
                         else
                         {
-                            Message += "\n Salitre(Ya Existe!)";
+                            Message += "\n Salitre(Ya Existe)";
                         }
 
                     }
                     if (fileName.Contains("YN"))
                     {
-                        string path = Report + "\\Nuestro Bogota\\" + DateTime.UtcNow.Year.ToString() + "\\" + Mes + "\\";
+                        string path = Report + "\\Nuestro Bogota\\" + year + "\\" + nameMes + "\\";
                         if (!Directory.Exists(path))
                         {
                             Directory.CreateDirectory(path);
                         }
                         string destinationPath = Path.Combine(path, fileName);
-                        string fileNameOll = Path.GetFileName(destinationPath);
-                        if (fileName != fileNameOll)
+                        //validar que no exista el archivo
+                        if (!File.Exists(destinationPath))
                         {
                             File.Move(filePath, destinationPath);
                             Message += "\n Nuestro(OK)";
                         }
                         else
                         {
-                            Message += "\n Nuestro(Ya Existe!)";
+                            Message += "\n Nuestro(Ya Existe)";
                         }
                     }
                     if (fileName.Contains("YO"))
                     {
-                        string path = Report + "\\Diverplaza\\" + DateTime.UtcNow.Year.ToString() + "\\" + Mes + "\\";
+                        string path = Report + "\\Diverplaza\\" + year + "\\" + nameMes + "\\";
                         if (!Directory.Exists(path))
                         {
                             Directory.CreateDirectory(path);
                         }
                         string destinationPath = Path.Combine(path, fileName);
-                        string fileNameOll = Path.GetFileName(destinationPath);
-                        if (fileName != fileNameOll)
+                        //validar que no exista el archivo
+                        if (!File.Exists(destinationPath))
                         {
                             File.Move(filePath, destinationPath);
                             Message += "\n Diverplaza(OK)";
                         }
                         else
                         {
-                            Message += "\n Diverplaza(Ya Existe!)";
+                            Message += "\n Diverplaza(Ya Existe)";
                         }
                     }
                     if (fileName.Contains("YS"))
                     {
-                        string path = Report + "\\Santa Fe\\" + DateTime.UtcNow.Year.ToString() + "\\" + Mes + "\\";
+                        string path = Report + "\\Santa Fe\\" + year + "\\" + nameMes + "\\";
                         if (!Directory.Exists(path))
                         {
                             Directory.CreateDirectory(path);
                         }
                         string destinationPath = Path.Combine(path, fileName);
-                        string fileNameOll = Path.GetFileName(destinationPath);
-                        if (fileName != fileNameOll)
+                        //string fileNameOll = Path.GetFileName(destinationPath);
+                        //validar que no exista el archivo
+                        if (!File.Exists(destinationPath))
                         {
                             File.Move(filePath, destinationPath);
-                            Message += "\n SantaFe(OK)";
+                            Message += "\n Santafe(OK)";
                         }
                         else
                         {
-                            Message += "\n SantaFe(Ya Existe!)";
+                            Message += "\n Santafe(Ya Existe)";
                         }
                     }
                     if (fileName.Contains("YT"))
                     {
-                        string path = Report + "\\Titan\\" + DateTime.UtcNow.Year.ToString() + "\\" + Mes + "\\";
+                        string path = Report + "\\Titan\\" + year + "\\" + nameMes + "\\";
                         if (!Directory.Exists(path))
                         {
                             Directory.CreateDirectory(path);
                         }
                         string destinationPath = Path.Combine(path, fileName);
-                        string fileNameOll = Path.GetFileName(destinationPath);
-                        if (fileName != fileNameOll)
+                        //string fileNameOll = Path.GetFileName(destinationPath);
+                        if (!File.Exists(destinationPath))
                         {
                             File.Move(filePath, destinationPath);
                             Message += "\n Titan(OK)";
@@ -287,14 +203,14 @@ namespace testerorden
                     }
                     if (fileName.Contains("YW"))
                     {
-                        string path = Report + "\\Alegra\\" + DateTime.UtcNow.Year.ToString() + "\\" + Mes + "\\";
+                        string path = Report + "\\Alegra\\" + year + "\\" + nameMes + "\\";
                         if (!Directory.Exists(path))
                         {
                             Directory.CreateDirectory(path);
                         }
                         string destinationPath = Path.Combine(path, fileName);
-                        string fileNameOll = Path.GetFileName(destinationPath);
-                        if (fileName != fileNameOll)
+                        //string fileNameOll = Path.GetFileName(destinationPath);
+                        if (!File.Exists(destinationPath))
                         {
                             File.Move(filePath, destinationPath);
                             Message += "\n Alegra(OK)";
@@ -306,14 +222,14 @@ namespace testerorden
                     }
                     if (fileName.Contains("YZ"))
                     {
-                        string path = Report + "\\Caribe\\" + DateTime.UtcNow.Year.ToString() + "\\" + Mes + "\\";
+                        string path = Report + "\\Caribe\\" + year + "\\" + nameMes + "\\";
                         if (!Directory.Exists(path))
                         {
                             Directory.CreateDirectory(path);
                         }
                         string destinationPath = Path.Combine(path, fileName);
-                        string fileNameOll = Path.GetFileName(destinationPath);
-                        if (fileName != fileNameOll)
+                        //string fileNameOll = Path.GetFileName(destinationPath);
+                        if (!File.Exists(destinationPath))
                         {
                             File.Move(filePath, destinationPath);
                             Message += "\n Caribe(OK)";
@@ -323,13 +239,57 @@ namespace testerorden
                             Message += "\n Caribe(Ya Existe!)";
                         }
                     }
+                    if (fileName.Contains("45"))
+                    {
+                        string path = Report + "\\San Rafael\\" + year + "\\" + nameMes + "\\";
+                        if (!Directory.Exists(path))
+                        {
+                            Directory.CreateDirectory(path);
+                        }
+                        string destinationPath = Path.Combine(path, fileName);
+                        //string fileNameOll = Path.GetFileName(destinationPath);
+                        if (!File.Exists(destinationPath))
+                        {
+                            File.Move(filePath, destinationPath);
+                            Message += "\n Rafael(OK)";
+                        }
+                        else
+                        {
+                            Message += "\n Rafael(Ya Existe!)";
+                        }
+                    }
+                    if (fileName.Contains("0A"))
+                    {
+                        string path = Report + "\\Chipichape\\" + year + "\\" + nameMes + "\\";
+                        if (!Directory.Exists(path))
+                        {
+                            Directory.CreateDirectory(path);
+                        }
+                        string destinationPath = Path.Combine(path, fileName);
+                        //string fileNameOll = Path.GetFileName(destinationPath);
+                        if (!File.Exists(destinationPath))
+                        {
+                            File.Move(filePath, destinationPath);
+                            Message += "\n Chipichape(OK)";
+                        }
+                        else
+                        {
+                            Message += "\n Chipichape(Ya Existe!)";
+                        }
+                    }
                 }
-                EventLog.WriteEntry("FileOrganizerService", "Archivos organizados con éxito Ruta:" + Report+"\n"+Message, EventLogEntryType.Information);
+              
+
+                string contenido = $"[{DateTime.Now}] Archivos organizados con éxito. Ruta: {Report}{Environment.NewLine}{Message}{Environment.NewLine}";
+
+                File.AppendAllText(rutaArchivo, contenido);
             }
             catch (Exception ex)
             {
                 // Maneja cualquier excepción que pueda ocurrir durante la organización de archivos
-                EventLog.WriteEntry("FileOrganizerService", $"Error al organizar archivos: {ex.Message}", EventLogEntryType.Error);
+                string contenido = $"[{DateTime.Now}] Archivos organizados con éxito. Ruta: {Report}{Environment.NewLine}{ex}{Environment.NewLine}";
+
+                File.AppendAllText(rutaArchivo, contenido);
             }
         }
     }
